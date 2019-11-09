@@ -1,8 +1,10 @@
 from fs.base import FS
+from tinydb import TinyDB
 
 
 class DiscordFileSystem(FS):
-    def __init__(self):
+    def __init__(self, pathToDB):
+        self.db = TinyDB(pathToDB)
         super().__init__()
         pass
 
