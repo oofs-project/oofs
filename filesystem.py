@@ -1,18 +1,38 @@
+import fs.errors
 from fs.base import FS
-from tinydb import TinyDB
+from fs.info import Info
+
+from DatabaseWrapper import DBwrapper
 
 
 class DiscordFileSystem(FS):
     def __init__(self, pathToDB):
-        self.db = TinyDB(pathToDB)
+        self.DB = DBwrapper(pathToDB)
         super().__init__()
-        pass
 
-    def getinfo(self, path, namespaces=None):
-        pass
+    def getinfo(self, path, namespaces=['basic']):
+        info = Info(self.DB.getInfo(path))
+        return info
+
 
     def listdir(self, path):
-        pass
+        info = self.DB.getInfo(path)
+        if not info.get('basic', 'id_dir'):
+            raise fs.errors.DirectoryExpected
+        if not self.DB.pathExist(path):
+            raise fs.errors.ResourceNotFound
+
+        FileDocs = self.DB.getFilesInFolder(path)
+        files = []
+        for i in FileDocs:
+            if i['path'][0] == "/":
+                i['path'] = i['path'][1:]
+            if i['path'][-1] == "/":
+                i['path'][-1] = i['path'][-2]
+            name = i['path'].split("/")[-1]
+            files.append(name)
+        return files
+
 
     def makedir(self, path, permissions=None, recreate=False):
         pass

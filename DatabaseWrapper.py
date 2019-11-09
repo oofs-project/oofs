@@ -10,8 +10,19 @@ class DBwrapper(object):
         file = self.db.search(File.path == path)
         return file[0]
 
+    def pathExist(self, path):
+        File = Query()
+        exists = self.db.contains(File.path == path)
+        return exists
+
+    def getFilesInFolder(self, path):
+        Files = Query()
+        files = self.db.search(Files.parent == path)
+        return files
+
     def addFile(self, path, info, chunks=[]):
-        document = {'path': path, 'info': info, "chunks": chunks}
+        parent = ''.join(path[1:].split('/')[:-1])
+        document = {'path': path, 'parent': parent, 'info': info, "chunks": chunks}
         self.db.insert(document)
         return True
 
