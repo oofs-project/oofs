@@ -3,6 +3,7 @@ from fs.base import FS
 
 class DiscordFileSystem(FS):
     def __init__(self):
+        super().__init__()
         pass
 
     def getinfo(self, path, namespaces=None):
