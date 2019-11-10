@@ -56,8 +56,7 @@ class ModifiedTemp(SpooledTemporaryFile):
 class DiscordFileSystem(FS):
     client = discord.Client()
     BotChannel = 642818966825336835
-    t = threading.Thread(target=client.start, kwargs={'token': open(".env", "r").read(), 'bot': True})
-    t.start()
+
 
     def upload(self, filename, VirtualPath):
         chunks = splitter.chunk(filename, 1000000)
@@ -82,6 +81,9 @@ class DiscordFileSystem(FS):
         return tosave
 
     def __init__(self, pathToDB):
+        t = threading.Thread(target=DiscordFileSystem.client.start,
+                             kwargs={'token': open(".env", "r").read(), 'bot': True})
+        t.start()
         while not DiscordFileSystem.client.is_ready():
             time.sleep(1)
         print("Started!")
