@@ -50,6 +50,7 @@ def run_it_forever(loop):
 class DiscordFileSystem(FS):
     client = discord.Client()
 
+
     loop = asyncio.get_event_loop()
     loop.create_task(start())
     thread = threading.Thread(target=run_it_forever, args=(loop,))
