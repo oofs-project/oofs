@@ -4,6 +4,8 @@ from fs.info import Info
 
 from DatabaseWrapper import DBwrapper
 
+import encdec
+
 
 class DiscordFileSystem(FS):
     def __init__(self, pathToDB):
@@ -38,7 +40,7 @@ class DiscordFileSystem(FS):
         pass
 
     def openbin(self, path, mode="r", buffering=-1, **options):
-        pass
+        encdec.decodeFile()
 
     def remove(self, path):
         pass

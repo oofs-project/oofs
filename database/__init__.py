@@ -1,51 +1,47 @@
-import sqlalchemy
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from tinydb import TinyDB, Query
 
 
-__all__ = ("FileID", "session")
+class DBwrapper(object):
+    def __init__(self, filename):
+        self.db = TinyDB(filename)
 
-engine = create_engine('sqlite:///data.db')
+    def getFileAtPath(self, path):
+        File = Query()
+        file = self.db.search(File.path == path)
+        return file[0]
 
-Base = declarative_base()
+    def pathExist(self, path):
+        File = Query()
+        exists = self.db.contains(File.path == path)
+        return exists
 
-Session = sessionmaker()
+    def getFilesInFolder(self, path):
+        Files = Query()
+        files = self.db.search(Files.parent == path)
+        return files
 
-class FileID(Base):
-    __tablename__ = "ids"
+    def addFile(self, path, info, chunks=[]):
+        parent = ''.join(path[1:].split('/')[:-1])
+        document = {'path': path, 'parent': parent, 'info': info, "chunks": chunks}
+        self.db.insert(document)
+        return True
 
-    id = Column(Integer(), primary_key=True)
-    filename = Column(String())
-    messageid = Column(String())
+    def addChunk(self, path, chunk):
+        file = self.getFileAtPath(path)
+        file['chunks'].append(chunk)
+        self.db.writeback([file])
+        return True
 
-Base.metadata.create_all(engine)
+    def getChunks(self, path):
+        file = self.getFileAtPath(path)
+        return file['chunks']
 
-Session.configure(bind=engine)
+    def getInfo(self, path):
+        file = self.getFileAtPath(path)
+        return file['info']
 
-session = Session()
-
-
-def getFileById(messageid):
-    filename = session.query(FileID).filter_by(messageid=messageid).first()
-    return 
-
-def getIdByFile():
-    pass
-
-def addFileToDB(filepath, messageid):
-    fileToAdd = FileID(filename=str(filepath), messageid=str(messageid))
-    session.add(fileToAdd)
-    try:
-        session.commit()
-    except:
-        return False
-    return True
-
-def removeFileFromDBById(fileid):
-    pass
-
-def removeFileFromDBByFileName(filename):
-    pass
-
-
+    def setInfo(self, path, info):
+        file = self.getFileAtPath(path)
+        file['info'] = info
+        self.db.writeback([file])
+        return True
