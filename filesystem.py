@@ -54,7 +54,7 @@ class ModifiedTemp(SpooledTemporaryFile):
         self._file.close()
 
 
-def start():
+async def start():
     await DiscordFileSystem.client.start(open(".env", "r").read())
 
 
@@ -63,12 +63,12 @@ def run_it_forever(loop):
 
 class DiscordFileSystem(FS):
     client = discord.Client()
+
     loop = asyncio.get_event_loop()
     loop.create_task(start())
     thread = threading.Thread(target=run_it_forever, args=(loop,))
     thread.start()
     BotChannel = 642818966825336835
-
 
     def upload(self, filename, VirtualPath):
         chunks = splitter.chunk(filename, 1000000)
