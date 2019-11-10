@@ -27,8 +27,10 @@ class tempFile(io.BytesIO):
             self.DFS.DB.addFile(self.path, [], [])
         self.DFS.DB.removeChunks(self.path)
         i = 0
+        len(chunks)
         for chunk in chunks:
-            print(chunk)
+            print(str((i / len(chunks)) * 100) + f"% done. {i} out of {len(chunks)}")
+
             i += 1
             print("Uploading chunk " + str(i))
             m = asyncio.run_coroutine_threadsafe(

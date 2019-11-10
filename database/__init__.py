@@ -1,5 +1,5 @@
 from tinydb import TinyDB, Query
-
+from tinydb.queries import where
 
 class DBwrapper(object):
     def __init__(self, filename):
@@ -55,7 +55,7 @@ class DBwrapper(object):
         self.db.write_back([file])
         return True
 
-    def removeFile(self, path):
+    def remove(self, path):
         file = self.getFileAtPath(path)
-        self.db.update(delete('path'), where('path') == path)
+        self.db.remove(where('path') == path)
         return True
