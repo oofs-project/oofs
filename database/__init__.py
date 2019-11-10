@@ -7,8 +7,8 @@ class DBwrapper(object):
 
     def getFileAtPath(self, path):
         File = Query()
-        file = self.db.search(File.path == path)
-        return file[0]
+        file = self.db.get(File.path == path)
+        return file
 
     def pathExist(self, path):
         File = Query()
@@ -29,7 +29,7 @@ class DBwrapper(object):
     def addChunk(self, path, chunk):
         file = self.getFileAtPath(path)
         file['chunks'].append(chunk)
-        self.db.writeback([file])
+        self.db.writeback(file)
         return True
 
     def getChunks(self, path):
