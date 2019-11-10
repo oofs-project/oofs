@@ -29,7 +29,7 @@ class DBwrapper(object):
     def addChunk(self, path, chunk):
         file = self.getFileAtPath(path)
         file['chunks'].append(chunk)
-        self.db.write_back(file)
+        self.db.write_back([file])
         return True
 
     def getChunks(self, path):
