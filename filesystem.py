@@ -53,8 +53,20 @@ class ModifiedTemp(SpooledTemporaryFile):
             self.DB.addChunk(self.realpath, m.id)
         self._file.close()
 
+
+def start():
+    await DiscordFileSystem.client.start(open(".env", "r").read())
+
+
+def run_it_forever(loop):
+    loop.run_forever()
+
 class DiscordFileSystem(FS):
     client = discord.Client()
+    loop = asyncio.get_event_loop()
+    loop.create_task(start())
+    thread = threading.Thread(target=run_it_forever, args=(loop,))
+    thread.start()
     BotChannel = 642818966825336835
 
 
@@ -81,9 +93,7 @@ class DiscordFileSystem(FS):
         return tosave
 
     def __init__(self, pathToDB):
-        t = threading.Thread(target=DiscordFileSystem.client.start,
-                             kwargs={'token': open(".env", "r").read(), 'bot': True})
-        t.start()
+
         while not DiscordFileSystem.client.is_ready():
             time.sleep(1)
         print("Started!")
