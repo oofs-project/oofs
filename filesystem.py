@@ -2,7 +2,6 @@ import asyncio
 import io
 import threading
 import time
-from tempfile import SpooledTemporaryFile
 
 import discord
 import fs.errors
@@ -14,44 +13,29 @@ import splitter
 from database import DBwrapper
 
 
-class ModifiedTemp(SpooledTemporaryFile):
-    def __init__(self, DFS, realpath, max_size=0, mode='w+b', buffering=-1,
-                 encoding=None, newline=None,
-                 suffix=None, prefix=None, dir=None):
-        super().__init__(self, max_size, mode, buffering,
-                         encoding, newline,
-                         suffix, prefix, dir)
-        self._file = DFS.download(realpath)
+class tempFile(io.BytesIO):
+    def __init__(self, DFS, bytes, path):
+        super().__init__(bytes)
+        self.path = path
         self.DFS = DFS
-        self.realpath = realpath
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        chunks = splitter.chunkBytes(self._file.read(), 1000000)
-        if not self.DFS.DB.pathExist(self.realpath):
-            self.DFS.DB.addFile(self.realpath, [], [])
-        self.DFS.DB.removeChunks(self.realpath)
+    def copy(self) -> None:
+        print("Closing")
+        chunks = splitter.chunkBytes(self.getvalue(), 8000000)
+        print(chunks)
+        if not self.DFS.DB.pathExist(self.path):
+            self.DFS.DB.addFile(self.path, [], [])
+        self.DFS.DB.removeChunks(self.path)
         i = 0
         for chunk in chunks:
+            print(chunk)
             i += 1
+            print("Uploading chunk " + str(i))
             m = asyncio.run_coroutine_threadsafe(
                 DiscordFileSystem.client.guilds[0].text_channels[0].send(file=File(chunk, filename=str(i))),
                 DiscordFileSystem.client.loop).result()
-            self.DB.addChunk(self.realpath, m.id)
-        self._file.close()
+            self.DFS.DB.addChunk(self.path, m.id)
 
-    def close(self):
-        chunks = splitter.chunkBytes(self._file.read(), 1000000)
-        if not self.DFS.DB.pathExist(self.realpath):
-            self.DFS.DB.addFile(self.realpath, [], [])
-        self.DFS.DB.removeChunks(self.realpath)
-        i = 0
-        for chunk in chunks:
-            i += 1
-            m = asyncio.run_coroutine_threadsafe(
-                DiscordFileSystem.client.guilds[0].text_channels[0].send(file=File(chunk, filename=str(i))),
-                DiscordFileSystem.client.loop).result()
-            self.DB.addChunk(self.realpath, m.id)
-        self._file.close()
 
 
 async def start():
@@ -70,26 +54,32 @@ class DiscordFileSystem(FS):
     thread.start()
     BotChannel = 642818966825336835
 
-    def upload(self, filename, VirtualPath):
-        chunks = splitter.chunk(filename, 1000000)
+    def upload2(self, filename, VirtualPath):
+        chunks = splitter.chunk(filename, 8000000)
         self.DB.addFile(VirtualPath, [], [])
         i = 0
         for chunk in chunks:
             i += 1
+            print("Uploading chunk " + str(i))
             m = asyncio.run_coroutine_threadsafe(
                 DiscordFileSystem.client.guilds[0].text_channels[0].send(file=File(chunk, filename=str(i))),
                 DiscordFileSystem.client.loop).result()
             self.DB.addChunk(VirtualPath, m.id)
 
-    def download(self, VirtualPath):
-        Ids = self.DB.getChunks(VirtualPath)  # List of message IDs
+    def download2(self, VirtualPath):
+        if self.DB.pathExist(path=VirtualPath):
+            Ids = self.DB.getChunks(VirtualPath)  # List of message IDs
+        else:
+            Ids = []
         tosave = io.BytesIO()
-        for id in Ids:
+        for id2 in Ids:
+            print("ran")
             message = asyncio.run_coroutine_threadsafe(
-                DiscordFileSystem.client.get_channel(DiscordFileSystem.BotChannel).fetch_message(id),
-                DiscordFileSystem.client.loop).result()
+                DiscordFileSystem.client.get_channel(DiscordFileSystem.BotChannel).fetch_message(id2),
+                self.client.loop).result()
             asyncio.run_coroutine_threadsafe(message.attachments[0].save(tosave, seek_begin=False, use_cached=False),
-                                             DiscordFileSystem.client.loop).result()
+                                             self.client.loop).result()
+            print(message)
         return tosave
 
     def __init__(self, pathToDB):
@@ -128,7 +118,8 @@ class DiscordFileSystem(FS):
         pass
 
     def openbin(self, path, mode="r", buffering=-1, **options):
-        return ModifiedTemp(self, path, 0, mode, buffering)
+        bytes = self.download2(path)
+        return tempFile(self, bytes.getvalue(), path)
 
     def remove(self, path):
         pass
