@@ -1,3 +1,18 @@
+"""OOFS
+
+Usage:
+    main.py upload <filename>
+    main.py download <filename>
+    main.py delete <filename>
+
+Options:
+    -h --help   Shows this screen.
+    --about     Shows what this is about.
+    --version   Shows version.
+
+"""
+from docopt import docopt
+
 import discord
 from discord import File
 from diskcollections.iterables import FileList
@@ -6,11 +21,16 @@ import io
 import splitter
 from database import DBwrapper
 
+import argparse
+
 BotChannel = 642818966825336835
 db = DBwrapper("db.json")
 
 
 client = discord.Client()
+
+
+
 
 
 async def upload(filename, VirtualPath):
@@ -34,4 +54,9 @@ async def on_ready():
         f.write(tosave.getbuffer())
 
 
-client.run(open(".env", "r").read())
+if __name__ == "__main__":
+    arguments = docopt(__doc__, version="OOFS v1.0.0")
+    print(arguments)
+    client.run(open(".env", "r").read())
+
+
