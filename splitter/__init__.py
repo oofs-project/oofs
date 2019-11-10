@@ -1,5 +1,8 @@
 import encdec
 import io
+from database import DBwrapper
+
+db = DBwrapper('db.json')
 
 def chunk(filename, chunksize):
     chunks = []
@@ -16,4 +19,4 @@ def chunk(filename, chunksize):
         return chunks
 
 def unchunk(chunks):
-    pass
+    db.getChunks(io.BytesIO(chunks))
