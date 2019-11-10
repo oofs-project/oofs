@@ -57,7 +57,7 @@ class ModifiedTemp(SpooledTemporaryFile):
 class DiscordFileSystem(FS):
     client = discord.Client()
     BotChannel = 642818966825336835
-    t = threading.Thread(target=client.run, args=('NjQyODIzNDA3NDkwMTcwODgw.XcdZBg.6Rk1m82gh0Vt5eqWyy8JYOJAWco',))
+    t = threading.Thread(target=client.run, args=(open(".env", "r").read(),))
     t.start()
 
     def upload(self, filename, VirtualPath):
