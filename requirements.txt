@@ -47,7 +47,7 @@ pyxattr==0.6.0
 pyxdg==0.25
 PyYAML==3.12
 reportlab==3.4.0
-requests==2.18.4
+requests==2.20.0
 requests-unixsocket==0.1.5
 SecretStorage==2.3.1
 setproctitle==1.1.10
