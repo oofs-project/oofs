@@ -1,11 +1,11 @@
+import asyncio
 import io
+import threading
 import time
 from tempfile import SpooledTemporaryFile
 
-import asyncio
 import discord
 import fs.errors
-import threading
 from discord import File
 from fs.base import FS
 from fs.info import Info
@@ -53,11 +53,10 @@ class ModifiedTemp(SpooledTemporaryFile):
             self.DB.addChunk(self.realpath, m.id)
         self._file.close()
 
-
 class DiscordFileSystem(FS):
     client = discord.Client()
     BotChannel = 642818966825336835
-    t = threading.Thread(target=client.run, args=(open(".env", "r").read(),))
+    t = threading.Thread(target=client.start, kwargs={'token': open(".env", "r").read(), 'bot': True})
     t.start()
 
     def upload(self, filename, VirtualPath):
