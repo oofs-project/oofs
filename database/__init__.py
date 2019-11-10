@@ -54,3 +54,8 @@ class DBwrapper(object):
         file['info'] = info
         self.db.write_back([file])
         return True
+
+    def removeFile(self, path):
+        file = self.getFileAtPath(path)
+        self.db.update(delete('path'), where('path') == path)
+        return True
