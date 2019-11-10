@@ -11,11 +11,12 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    splitter.chunk('test.JPG', 1000000)
+    chunks = splitter.chunk('test.JPG', 1000000)
     db.addFile('/test.JPG', [], [])
-
-    for filename in os.listdir('chunks/'):
-        m = await client.guilds[0].text_channels[0].send(file=File(open(os.path.join('chunks/', filename), 'rb')))
+    i = 0
+    for chunk in chunks:
+        i += 1
+        m = await client.guilds[0].text_channels[0].send(file=File(chunk, filename=str(i)))
         db.addChunk('/test.JPG', m.id)
 
 client.run(open(".env", "r").read())
