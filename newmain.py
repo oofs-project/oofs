@@ -15,3 +15,4 @@ print("wrote")
 with open('1GB discorded.bin', 'wb') as f:
     f.write(DFS.openbin('/1g.bin').getvalue())
 print("finish")
+print()
