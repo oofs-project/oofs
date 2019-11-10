@@ -1,6 +1,7 @@
 import discord
 from discord import File
 from diskcollections.iterables import FileList
+import io
 
 import splitter
 from database import DBwrapper
@@ -25,9 +26,12 @@ async def upload(filename, VirtualPath):
 async def on_ready():
     flist = FileList()
     Ids = db.getChunks("/test.JPG")  # List of message IDs
+    tosave = io.BytesIO()
     for id in Ids:
-        message = client.get_channel(BotChannel).get_message(id)
-        print(message)
+        message = await client.get_channel(BotChannel).fetch_message(id)
+        await message.attachments[0].save(tosave, seek_begin=False, use_cached=False)
+    with open("test-unchunked.jpg", 'wb') as f:
+        f.write(tosave.getbuffer())
 
 
 client.run(open(".env", "r").read())

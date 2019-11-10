@@ -1,15 +1,9 @@
 import io
-<<<<<<< HEAD
-from database import DBwrapper
-
-db = DBwrapper('db.json')
-=======
 from diskcollections.iterables import FileList
 import io
 
 from diskcollections.iterables import FileList
 
->>>>>>> 755bd1d073655099fc636a99c5e49b90614f2a8c
 
 def chunk(filename, chunksize):
     chunks = FileList()
