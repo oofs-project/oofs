@@ -23,8 +23,11 @@ class DBwrapper(object):
     def addFile(self, path, info, chunks=[]):
         parent = ''.join(path[1:].split('/')[:-1])
         document = {'path': path, 'parent': parent, 'info': info, "chunks": chunks}
-        self.db.insert(document)
-        return True
+        if not self.pathExist(path):
+            self.db.insert(document)
+            return True
+        else:
+            return False
 
     def addChunk(self, path, chunk):
         file = self.getFileAtPath(path)
@@ -43,5 +46,5 @@ class DBwrapper(object):
     def setInfo(self, path, info):
         file = self.getFileAtPath(path)
         file['info'] = info
-        self.db.writeback([file])
+        self.db.write_back([file])
         return True
