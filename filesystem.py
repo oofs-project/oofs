@@ -55,7 +55,7 @@ class DiscordFileSystem(FS):
     loop.create_task(start())
     thread = threading.Thread(target=run_it_forever, args=(loop,))
     thread.start()
-    BotChannel = 642818966825336835
+    BotChannel = 643113512427585546
 
     def upload2(self, filename, VirtualPath):
         chunks = splitter.chunk(filename, 8000000)
