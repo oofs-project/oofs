@@ -7,7 +7,7 @@ blinker==1.4
 catfish==1.4.4
 certifi==2018.1.18
 chardet==3.0.4
-cryptography==2.1.4
+cryptography==3.2
 cupshelpers==1.0
 daemonize==2.4.7
 defer==1.0.6
