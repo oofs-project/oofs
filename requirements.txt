@@ -15,7 +15,7 @@ discord.py==1.2.4
 docopt==0.6.2
 filesplit==2.0.0
 fs==2.4.11
-httplib2==0.9.2
+httplib2==0.19.0
 idna==2.8
 idna-ssl==1.1.0
 keyring==10.6.0
