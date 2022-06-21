@@ -26,7 +26,7 @@ mugshot==0.4.0
 multidict==4.5.2
 netifaces==0.10.4
 notify2==0.3
-numpy==1.13.3
+numpy==1.22.0
 oauthlib==2.0.6
 olefile==0.45.1
 onboard==1.4.1
