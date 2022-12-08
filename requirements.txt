@@ -5,7 +5,7 @@ async-timeout==3.0.1
 attrs==19.3.0
 blinker==1.4
 catfish==1.4.4
-certifi==2018.1.18
+certifi==2022.12.7
 chardet==3.0.4
 cryptography==2.1.4
 cupshelpers==1.0
